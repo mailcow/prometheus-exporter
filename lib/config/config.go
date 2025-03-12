@@ -11,10 +11,12 @@ import (
 type ConfigKey string
 
 const (
-	Scheme ConfigKey = "scheme"
-	Host   ConfigKey = "host"
-	ApiKey ConfigKey = "apiKey"
-	Listen ConfigKey = "listen"
+	Scheme                                  ConfigKey = "scheme"
+	Host                                    ConfigKey = "host"
+	ApiKey                                  ConfigKey = "apiKey"
+	Listen                                  ConfigKey = "listen"
+	SecurityToken                           ConfigKey = "securityToken"
+	SecurityInsecureDisableAccessProtection ConfigKey = "securityInsecureDisableAccessProtection"
 )
 
 type Config map[ConfigKey]string
@@ -29,10 +31,41 @@ type ConfigItem struct {
 
 var (
 	configItems = map[ConfigKey]ConfigItem{
-		Scheme: ConfigItem{EnvVar: "MAILCOW_EXPORTER_SCHEME", CliFlag: "scheme", Default: "https"},
-		Host:   ConfigItem{EnvVar: "MAILCOW_EXPORTER_HOST", CliFlag: "host", Required: true},
-		ApiKey: ConfigItem{EnvVar: "MAILCOW_EXPORTER_API_KEY", CliFlag: "api-key", Required: true},
-		Listen: ConfigItem{EnvVar: "MAILCOW_EXPORTER_LISTEN", CliFlag: "listen", Default: ":9099"},
+		Scheme: ConfigItem{
+			EnvVar:  "MAILCOW_EXPORTER_SCHEME",
+			CliFlag: "scheme",
+			Default: "https",
+			Help:    "The Scheme used to access the mailcow API (http/https)",
+		},
+		Host: ConfigItem{
+			EnvVar:   "MAILCOW_EXPORTER_HOST",
+			CliFlag:  "host",
+			Required: true,
+			Help:     "The hostname of the mailcow instance",
+		},
+		ApiKey: ConfigItem{
+			EnvVar:   "MAILCOW_EXPORTER_API_KEY",
+			CliFlag:  "api-key",
+			Required: true,
+			Help:     "The API Key used to access mailcow",
+		},
+		Listen: ConfigItem{
+			EnvVar:  "MAILCOW_EXPORTER_LISTEN",
+			CliFlag: "listen",
+			Default: ":9099",
+			Help:    "Hostname and port the exporter listens on",
+		},
+		SecurityToken: ConfigItem{
+			EnvVar:  "MAILCOW_EXPORTER_SECURITY_TOKEN",
+			CliFlag: "security-token",
+			Help:    "The token that must be provided through the ?token=... URL parameter when accessing the exporter.\nThis defaults to the mailcow API Token if nothing is provided.",
+		},
+		SecurityInsecureDisableAccessProtection: ConfigItem{
+			EnvVar:  "MAILCOW_EXPORTER_SECURITY_DISABLE_ACCESS_PROTECTION",
+			CliFlag: "security-insecure-disable-access-protection",
+			Default: "0",
+			Help:    "Disables access protection for the exporter if set to 1.\nThis may expose sensitive information if no other security precautions are used",
+		},
 	}
 )
 
@@ -98,13 +131,13 @@ func buildHelpString(item ConfigItem) string {
 	additions := []string{}
 
 	if item.Default != "" {
-		additions = append(additions, fmt.Sprintf("default: \"%s\"", item.Default))
+		additions = append(additions, fmt.Sprintf("default:  \"%s\"", item.Default))
 	}
 	if item.EnvVar != "" {
 		env := os.Getenv(item.EnvVar)
-		additions = append(additions, fmt.Sprintf("env:     %s=\"%s\"", item.EnvVar, env))
+		additions = append(additions, fmt.Sprintf("env:      %s=\"%s\"", item.EnvVar, env))
 	}
-	additions = append(additions, fmt.Sprintf("CLI:     --%s", item.CliFlag))
+	additions = append(additions, fmt.Sprintf("CLI:      --%s", item.CliFlag))
 	if item.Required {
 		additions = append(additions, "[required]")
 	}

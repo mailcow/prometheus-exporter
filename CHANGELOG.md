@@ -14,10 +14,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking Changes
 * In order to simplify usage and prevent security issues, configuration can no longer
   be provided as URL parameters - it must be set either through environment variables
-  or CLI flags when starting the exporter. See the README for the new recommended setup.
+  or CLI flags when starting the exporter.
+* The exporter now uses a token to secure access by default. See the README for the new
+  recommended setup.
 * The following CLI flags have been renamed:
   * `--defaultHost` is now `--host`
   * `--apikey` is now `--api-key`
+
+
+When previously using the following prometheus config:
+
+```yaml
+scrape_configs:
+  - job_name: 'mailcow'
+    static_configs:
+      - targets: ['mailcow-exporter-hostname:9099']
+    params:
+      host: ['mail.mycompany.com']
+      apiKey: ['abc123']
+```
+
+You must now start the exporter either with `--host=mail.mycompany.com` and `--api-key=abc123`
+or `MAILCOW_EXPORTER_HOST=mail.mycompany.com` and `MAILCOW_EXPORTER_API_KEY=abc123`. The
+prometheus config can be reduced to the following:
+
+```yaml
+scrape_configs:
+  - job_name: 'mailcow'
+    static_configs:
+      - targets: ['mailcow-exporter-hostname:9099']
+    params:
+      token: ['abc123']   # Please read the section about token authentication in the README
+```
+
 
 ### Added
 * `--scheme` can now be provided via CLI flag

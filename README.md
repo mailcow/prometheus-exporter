@@ -28,25 +28,40 @@ interface and navigating to 'Access > API'.
 
 ![Visualization of where to find the API Key](./.readme/api-key.png)
 
-The following prometheus configuration can be used in order to pass these information
-to the endpoint:
+
+Because this exporter provides sensitive information, it provides a couple of methods protecting access
+to the endpoint. By default, accessing the endpoints is only allowed by providing the same API-Key as
+used for the exporter (`--api-key` / `MAILCOW_EXPORTER_API_KEY`) as a `?token=YOUR_APIKEY-HERE` URL
+parameter. It is recommended however, to manually set a token that is different from the API-Key using
+`--security-token` / `MAILCOW_EXPORTER_SECURITY_TOKEN`. In order to use token based authentication in
+prometheus, use the following config:
 
 ```yaml
 scrape_configs:
   - job_name: 'mailcow'
     static_configs:
       - targets: [ 'mailcow_exporter:9099' ]
+    params:
+      token: [ 'YOUR-APIKEY-HERE' ]
 ```
+
+#### Disable Access Protection (not recommended)
+
+It is possible to disable access protection by using `--security-insecure-disable-access-protection=1` or
+`MAILCOW_EXPORTER_INSECURE_DISABLE_ACCESS_PROTECTION=1`. This is heavily discouraged and should only be used
+if you either provide a different access protection method in front of the exporter or you only access
+the exporter in non-public networks.
 
 ### Configuration
 
-| Environment variable       | CLI-flag    | Default    | Description                                                              |
-|----------------------------|-------------|------------|--------------------------------------------------------------------------|
-| `MAILCOW_EXPORTER_HOST`    | `--host`    | [required] | Hostname under which the mailcow instance is hosted                      |
-| `MAILCOW_EXPORTER_API_KEY` | `--api-key` | [required] | API Key to use when accessing the mailcow API                            |
-| `MAILCOW_EXPORTER_SCHEME`  | `--scheme`  | `"https"`  | The scheme to use when accessing the API (must be `"http"` or `"https"`) |
-| `MAILCOW_EXPORTER_LISTEN`  | `--listen`  | `":9099"`  | The hostname and port to listen on                                       |
-
+| Environment variable                                  | CLI-flag                                        | Default     | Description                                                                                  |
+|-------------------------------------------------------|-------------------------------------------------|-------------|----------------------------------------------------------------------------------------------|
+| `MAILCOW_EXPORTER_HOST`                               | `--host`                                        | [required]  | Hostname under which the mailcow instance is hosted                                          |
+| `MAILCOW_EXPORTER_API_KEY`                            | `--api-key`                                     | [required]  | API Key to use when accessing the mailcow API                                                |
+| `MAILCOW_EXPORTER_SCHEME`                             | `--scheme`                                      | `"https"`   | The scheme to use when accessing the API (must be `"http"` or `"https"`)                     |
+| `MAILCOW_EXPORTER_LISTEN`                             | `--listen`                                      | `":9099"`   | The hostname and port to listen on                                                           |
+| `MAILCOW_EXPORTER_SECURITY_TOKEN`                     | `--security-token`                              | `--api-key` | Token that must be provided through the `?token=...` URL parameter in order to fetch metrics |
+| `MAILCOW_EXPORTER_SECURITY_DISABLE_ACCESS_PROTECTION` | `--security-insecure-disable-access-protection` | `"0"`       | Disables authentication                                                                      |
 ## Example metrics
 
 ```

@@ -6,6 +6,7 @@ import (
 	"github.com/mailcow/prometheus-exporter/lib/config"
 	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"github.com/mailcow/prometheus-exporter/lib/provider"
+	"github.com/mailcow/prometheus-exporter/lib/security"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
@@ -64,10 +65,23 @@ func collectMetrics(providers []provider.Provider, conf config.Config) *promethe
 func main() {
 	conf, confSource := config.GetConfig()
 	providers := provider.DefaultProviders()
+	securityProvider := security.GetSecurityProvider(conf)
 
-	printConfig(conf, confSource, providers)
+	printConfig(conf, confSource, providers, securityProvider)
 
 	http.HandleFunc("/metrics", func(response http.ResponseWriter, request *http.Request) {
+		checkResult := securityProvider.Check(*request)
+		if !checkResult.Success {
+			log.Printf("[ERROR]")
+			log.Printf("[ERROR] Security provider %T failed request %s %s", securityProvider, request.Method, request.URL)
+			log.Printf("[ERROR] External Message: %s", checkResult.ExternalMessage)
+			log.Printf("[ERROR] Internal Message: %s", checkResult.InternalMessage)
+			log.Printf("[ERROR]")
+
+			response.WriteHeader(http.StatusForbidden)
+			response.Write([]byte(checkResult.ExternalMessage))
+			return
+		}
 		registry := collectMetrics(providers, conf)
 
 		promhttp.HandlerFor(
@@ -80,15 +94,29 @@ func main() {
 	log.Fatal(http.ListenAndServe(conf[config.Listen], nil))
 }
 
-func printConfig(config config.Config, confSource config.ConfigSource, providers []provider.Provider) {
+func printConfig(
+	config config.Config,
+	confSource config.ConfigSource,
+	providers []provider.Provider,
+	securityProvider security.SecurityProvider,
+) {
+	log.Printf("\n")
 	log.Printf("Starting with configuration:")
 	for key, value := range config {
 		log.Printf("\t%s:\t\"%s\"", key, value)
 		log.Printf("\t\t ↳ %s", confSource[key])
 	}
 
+	log.Printf("\n")
+	log.Printf("Security: %T", securityProvider)
+	for _, line := range securityProvider.Usage() {
+		log.Printf("\t%s", line)
+	}
+	log.Printf("\n")
 	log.Printf("Providers:")
 	for _, p := range providers {
 		log.Printf("\t%T", p)
 	}
+
+	log.Printf("\n")
 }
