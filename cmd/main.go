@@ -1,80 +1,40 @@
 package main
 
 import (
-	"flag"
+	_ "embed"
 	"fmt"
+	"github.com/mailcow/prometheus-exporter/lib/config"
 	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"github.com/mailcow/prometheus-exporter/lib/provider"
-	"log"
-	"net/http"
-	"os"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"log"
+	"net/http"
 )
 
-var (
-	defaultHost   string
-	defaultApiKey string
-	listen        string
-)
-
-// A Provider is the common abstraction over collection of metrics in this
-// exporter. It can provide one or more prometheus collectors (e.g. gauges,
-// histograms, ...) that are updated every time the `Update` method is called.
-// Be sure to keep a copy of the collectors returned by `GetCollectors`
-// in your provider in order to update that same instance.
-type Provider interface {
-	Provide(mailcowApi.MailcowApiClient) ([]prometheus.Collector, error)
-}
-
-// Provider setup. Every provider in this array will be used for gathering metrics.
-var (
-	providers = []Provider{
-		provider.ApiMeta{},
-		provider.Mailq{},
-		provider.Mailbox{},
-		provider.Quarantine{},
-		provider.Container{},
-		provider.Rspamd{},
-		provider.Domain{},
-	}
-)
-
-func parseFlagsAndEnv() {
-	envHost, _ := os.LookupEnv("MAILCOW_EXPORTER_HOST")
-	envApiKey, _ := os.LookupEnv("MAILCOW_EXPORTER_API_KEY")
-	defaultListen, _ := os.LookupEnv("MAILCOW_EXPORTER_LISTEN")
-	if defaultListen == "" {
-		defaultListen = ":9099"
-	}
-
-	flag.StringVar(&defaultHost, "defaultHost", envHost, "The defaultHost to connect to. Defaults to the MAILCOW_EXPORTER_HOST environment variable")
-	flag.StringVar(&defaultApiKey, "apikey", envApiKey, "The API key to use for connection. Defaults to the MAILCOW_EXPORTER_API_KEY environment variable")
-	flag.StringVar(&listen, "listen", defaultListen, "Host and port to listen on. Defaults to the MAILCOW_EXPORTER_LISTEN environment variable or ':9099' otherwise")
-
-	flag.Parse()
-}
-
-func collectMetrics(scheme string, host string, apiKey string) *prometheus.Registry {
-	apiClient := mailcowApi.NewMailcowApiClient(scheme, host, apiKey)
+func collectMetrics(providers []provider.Provider, conf config.Config) *prometheus.Registry {
+	apiClient := mailcowApi.NewMailcowApiClient(
+		conf[config.Scheme],
+		conf[config.Host],
+		conf[config.ApiKey],
+	)
 
 	success := prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name:        "mailcow_exporter_success",
-		ConstLabels: map[string]string{"host": host},
+		ConstLabels: map[string]string{"host": conf[config.Host]},
 	}, []string{"provider"})
 
 	registry := prometheus.NewRegistry()
 	registry.Register(success)
 
-	for _, provider := range providers {
+	for _, p := range providers {
 		providerSuccess := true
-		collectors, err := provider.Provide(apiClient)
+		collectors, err := p.Provide(apiClient)
 		if err != nil {
 			providerSuccess = false
 			log.Printf(
 				"Error while updating metrics of %T:\n%s",
-				provider,
+				p,
 				err.Error(),
 			)
 		}
@@ -85,16 +45,16 @@ func collectMetrics(scheme string, host string, apiKey string) *prometheus.Regis
 				providerSuccess = false
 				log.Printf(
 					"Error while updating metrics of %T:\n%s",
-					provider,
+					p,
 					err.Error(),
 				)
 			}
 		}
 
 		if providerSuccess {
-			success.WithLabelValues(fmt.Sprintf("%T", provider)).Set(1.0)
+			success.WithLabelValues(fmt.Sprintf("%T", p)).Set(1.0)
 		} else {
-			success.WithLabelValues(fmt.Sprintf("%T", provider)).Set(0.0)
+			success.WithLabelValues(fmt.Sprintf("%T", p)).Set(0.0)
 		}
 	}
 
@@ -102,35 +62,13 @@ func collectMetrics(scheme string, host string, apiKey string) *prometheus.Regis
 }
 
 func main() {
-	parseFlagsAndEnv()
+	conf, confSource := config.GetConfig()
+	providers := provider.DefaultProviders()
+
+	printConfig(conf, confSource, providers)
 
 	http.HandleFunc("/metrics", func(response http.ResponseWriter, request *http.Request) {
-		host := request.URL.Query().Get("host")
-		apiKey := request.URL.Query().Get("apiKey")
-		scheme := request.URL.Query().Get("scheme")
-
-		if host == "" {
-			host = defaultHost
-		}
-		if apiKey == "" {
-			apiKey = defaultApiKey
-		}
-		if scheme == "" {
-			scheme = "https"
-		}
-
-		if host == "" {
-			response.WriteHeader(http.StatusBadRequest)
-			response.Write([]byte("Query parameter `host` is required, since it is not defined by flags or environment"))
-			return
-		}
-		if apiKey == "" {
-			response.WriteHeader(http.StatusUnauthorized)
-			response.Write([]byte("Query parameter `apiKey` is required, since it is not defined by flags or environment"))
-			return
-		}
-
-		registry := collectMetrics(scheme, host, apiKey)
+		registry := collectMetrics(providers, conf)
 
 		promhttp.HandlerFor(
 			registry,
@@ -138,6 +76,19 @@ func main() {
 		).ServeHTTP(response, request)
 	})
 
-	log.Printf("Starting to listen on %s", listen)
-	log.Fatal(http.ListenAndServe(listen, nil))
+	log.Printf("Starting to listen on %s", conf[config.Listen])
+	log.Fatal(http.ListenAndServe(conf[config.Listen], nil))
+}
+
+func printConfig(config config.Config, confSource config.ConfigSource, providers []provider.Provider) {
+	log.Printf("Starting with configuration:")
+	for key, value := range config {
+		log.Printf("\t%s:\t\"%s\"", key, value)
+		log.Printf("\t\t ↳ %s", confSource[key])
+	}
+
+	log.Printf("Providers:")
+	for _, p := range providers {
+		log.Printf("\t%T", p)
+	}
 }

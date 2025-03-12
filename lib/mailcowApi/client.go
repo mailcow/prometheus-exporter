@@ -30,9 +30,12 @@ type MailcowApiClient struct {
 
 func NewMailcowApiClient(scheme string, host string, apiKey string) MailcowApiClient {
 	return MailcowApiClient{
-		Scheme: scheme,
-		Host:   host,
-		ApiKey: apiKey,
+		Scheme:        scheme,
+		Host:          host,
+		ApiKey:        apiKey,
+		ResponseSizes: map[string]FloatStat{},
+		ResponseTimes: map[string]FloatStat{},
+		Success:       map[string]BoolStat{},
 	}
 }
 

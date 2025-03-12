@@ -10,6 +10,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - unreleased
+### Breaking Changes
+* In order to simplify usage and prevent security issues, configuration can no longer
+  be provided as URL parameters - it must be set either through environment variables
+  or CLI flags when starting the exporter. See the README for the new recommended setup.
+* The following CLI flags have been renamed:
+  * `--defaultHost` is now `--host`
+  * `--apikey` is now `--api-key`
+
+### Added
+* `--scheme` can now be provided via CLI flag
+
 ## [1.4.0] - 2023-12-07
 ### Added
 * Command line options `-defaultHost`, `-apikey`, `-listen` can now be set by environment variables
