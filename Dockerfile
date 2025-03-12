@@ -1,11 +1,11 @@
-FROM golang:1.23 as builder
+FROM golang:1.23 AS builder
 
 COPY ./ /build
 RUN cd /build \
     && go build -o /mailcow-exporter /build/cmd/main.go \
     && rm -Rf /build
 
-FROM alpine:3.18
+FROM alpine:3.21
 
 RUN apk add --no-cache \
         openssl \
