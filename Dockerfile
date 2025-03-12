@@ -13,4 +13,4 @@ RUN apk add --no-cache \
         libc6-compat
 COPY --from=builder /mailcow-exporter /usr/local/bin/mailcow-exporter
 
-ENTRYPOINT mailcow-exporter
+ENTRYPOINT [ "/usr/local/bin/mailcow-exporter" ]
