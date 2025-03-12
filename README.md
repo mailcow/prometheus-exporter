@@ -16,7 +16,7 @@
 $ docker run -p '9099:9099' \
     -e 'MAILCOW_EXPORTER_HOST=mail.myserver.com' \
     -e 'MAILCOW_EXPORTER_API_KEY=YOUR-APIKEY-HERE' \
-    mailcow/prometheus-exporter:2
+    ghcr.io/mailcow/prometheus-exporter:2
 
 # Natively
 $ ./mailcow-exporter --host=mail.myserver.com --api-key=YOUR-APIKEY-HERE
