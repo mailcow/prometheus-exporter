@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.0.0] - unreleased
+
+With this release, `mailcow-exporter` becomes part of the official mailcow organization, which
+means some things are renamed. Also, a bit of modernization was done on the codebase.
+
 ### Breaking Changes
 * In order to simplify usage and prevent security issues, configuration can no longer
   be provided as URL parameters - it must be set either through environment variables
@@ -20,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The following CLI flags have been renamed:
   * `--defaultHost` is now `--host`
   * `--apikey` is now `--api-key`
+* Docker images have moved from dockerhub to `ghcr.io/mailcow/prometheus-exporter`
 
 
 When previously using the following prometheus config:
@@ -50,6 +55,11 @@ scrape_configs:
 
 ### Added
 * `--scheme` can now be provided via CLI flag
+
+### Docker images
+- `ghcr.io/mailcow/prometheus-exporter:2`
+- `ghcr.io/mailcow/prometheus-exporter:2.0`
+- `ghcr.io/mailcow/prometheus-exporter:2.0.0`
 
 ## [1.4.0] - 2023-12-07
 ### Added

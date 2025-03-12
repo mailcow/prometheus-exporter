@@ -4,6 +4,7 @@
 * [LICENSE](./LICENSE)
 * [README](./README.md)
 * [CONTRIBUTING](./CONTRIBUTING.md)
+* [MAINTAINERS](./MAINTAINERS.md)
 
 [Prometheus](https://prometheus.io) exporter for information about a
 [mailcow](https://github.com/mailcow/mailcow-dockerized) instance.
