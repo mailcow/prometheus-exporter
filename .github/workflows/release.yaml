@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '1.*'
+      - '2.*'
+      - '3.*'
+      - '4.*'
+      - '5.*'
+
+jobs:
+  build:
+    name: 'Create Release'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: make build-all
+
+      - uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: true
+          prerelease: false
+          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Upload linux/amd64'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__linux-amd64
+          asset_name: mailcow-prometheus-exporter__linux-amd64
+          asset_content_type: application/x-executable
+      - name: 'Upload linux/armv6'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__linux-armv6
+          asset_name: mailcow-prometheus-exporter__linux-armv6
+          asset_content_type: application/x-executable
+      - name: 'Upload linux/armv7'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__linux-armv7
+          asset_name: mailcow-prometheus-exporter__linux-armv7
+          asset_content_type: application/x-executable
+      - name: 'Upload linux/arm64'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__linux-arm64
+          asset_name: mailcow-prometheus-exporter__linux-arm64
+          asset_content_type: application/x-executable
+      - name: 'Upload darwin/amd64'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__macos-amd64
+          asset_name: mailcow-prometheus-exporter__macos-amd64
+          asset_content_type: application/x-executable
+      - name: 'Upload darwin/arm64'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__macos-arm64
+          asset_name: mailcow-prometheus-exporter__macos-arm64
+          asset_content_type: application/x-executable
+      - name: 'Upload windows/amd64'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__win-amd64
+          asset_name: mailcow-prometheus-exporter__win-amd64
+          asset_content_type: application/x-executable
+      - name: 'Upload windows/arm64'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mailcow-prometheus-exporter__win-amd64
+          asset_name: mailcow-prometheus-exporter__win-amd64
+          asset_content_type: application/x-executable
