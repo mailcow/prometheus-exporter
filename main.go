@@ -32,6 +32,7 @@ type Provider interface {
 // Provider setup. Every provider in this array will be used for gathering metrics.
 var (
 	providers = []Provider{
+		provider.ApiMeta{},
 		provider.Mailq{},
 		provider.Mailbox{},
 		provider.Quarantine{},
