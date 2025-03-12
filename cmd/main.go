@@ -3,12 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
+	"github.com/mailcow/prometheus-exporter/lib/provider"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/mailcow/prometheus-exporter/mailcowApi"
-	"github.com/mailcow/prometheus-exporter/provider"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

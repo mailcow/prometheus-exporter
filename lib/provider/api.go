@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/mailcow/prometheus-exporter/mailcowApi"
+	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
 )

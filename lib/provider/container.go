@@ -1,9 +1,9 @@
 package provider
 
 import (
+	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"time"
 
-	"github.com/mailcow/prometheus-exporter/mailcowApi"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
