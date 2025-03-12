@@ -93,13 +93,13 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: bin/mailcow-prometheus-exporter__win-amd64
           asset_name: mailcow-prometheus-exporter__win-amd64
-          asset_content_type: application/x-executable
+          asset_content_type: application/x-dosexec
       - name: 'Upload windows/arm64'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/mailcow-prometheus-exporter__win-amd64
-          asset_name: mailcow-prometheus-exporter__win-amd64
-          asset_content_type: application/x-executable
+          asset_path: bin/mailcow-prometheus-exporter__win-arm64
+          asset_name: mailcow-prometheus-exporter__win-arm64
+          asset_content_type: application/x-dosexec
