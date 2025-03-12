@@ -3,7 +3,7 @@ package provider
 import (
 	"encoding/json"
 
-	"github.com/j6s/mailcow-exporter/mailcowApi"
+	"github.com/mailcow/prometheus-exporter/mailcowApi"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

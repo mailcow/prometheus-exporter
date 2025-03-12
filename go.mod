@@ -1,4 +1,4 @@
-module github.com/j6s/mailcow-exporter
+module github.com/mailcow/prometheus-exporter
 
 go 1.14
 

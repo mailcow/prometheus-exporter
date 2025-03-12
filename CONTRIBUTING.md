@@ -11,7 +11,7 @@ Please be aware that even though it may not seem like it there are always other 
 **Please treat others with respect and kindness.**
 
 If you have general questions or suggestions for improvement, open an issue or
-[hit me up on twitter](https://twitter.com/thej6s)
+[send me a mail](mailto:mailcow-exporter@j6s.dev)
 
 ## Adding a new Provider
 

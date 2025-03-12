@@ -3,7 +3,7 @@ package provider
 import (
 	"encoding/json"
 
-	"github.com/j6s/mailcow-exporter/mailcowApi"
+	"github.com/mailcow/prometheus-exporter/mailcowApi"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -12,15 +12,15 @@ import (
 type Domain struct{}
 
 type domainItem struct {
-	Domain        string      `json:"domain_name"`
-	Active        json.Number `json:"active"`
-	Mailboxes     json.Number `json:"mboxes_in_domain"`
-	MaxMailboxes  json.Number `json:"max_num_mboxes_for_domain"`
-	Aliases       json.Number `json:"aliases_in_domain"`
-	MaxAliases    json.Number `json:"max_num_aliases_for_domain"`
-	Quota         json.Number `json:"max_quota_for_domain"`
-	QuotaUsed     json.Number `json:"bytes_total"`
-	Messages      json.Number `json:"msgs_total"`
+	Domain       string      `json:"domain_name"`
+	Active       json.Number `json:"active"`
+	Mailboxes    json.Number `json:"mboxes_in_domain"`
+	MaxMailboxes json.Number `json:"max_num_mboxes_for_domain"`
+	Aliases      json.Number `json:"aliases_in_domain"`
+	MaxAliases   json.Number `json:"max_num_aliases_for_domain"`
+	Quota        json.Number `json:"max_quota_for_domain"`
+	QuotaUsed    json.Number `json:"bytes_total"`
+	Messages     json.Number `json:"msgs_total"`
 }
 
 // All domain gauges have the same options anyways.

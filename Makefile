@@ -14,4 +14,4 @@ build-all: clean
 	GOOS="windows" GOARCH="amd64" go build -o bin/mailcow-exporter__win-amd64 main.go
 
 docker:
-	docker build . -t thej6s/mailcow-exporter
+	docker build . -t themailcow/prometheus-exporter

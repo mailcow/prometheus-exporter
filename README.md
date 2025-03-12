@@ -12,7 +12,7 @@
 
 ```bash
 # As a docker container
-$ docker run -p '9099:9099' thej6s/mailcow-exporter
+$ docker run -p '9099:9099' themailcow/prometheus-exporter
 
 # Natively
 $ ./mailcow-exporter

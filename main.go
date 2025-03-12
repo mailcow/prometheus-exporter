@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/j6s/mailcow-exporter/mailcowApi"
-	"github.com/j6s/mailcow-exporter/provider"
+	"github.com/mailcow/prometheus-exporter/mailcowApi"
+	"github.com/mailcow/prometheus-exporter/provider"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -97,10 +97,6 @@ func collectMetrics(scheme string, host string, apiKey string) *prometheus.Regis
 		} else {
 			success.WithLabelValues(fmt.Sprintf("%T", provider)).Set(0.0)
 		}
-	}
-
-	for _, collector := range apiClient.Provide() {
-		registry.Register(collector)
 	}
 
 	return registry
