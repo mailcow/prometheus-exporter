@@ -3,6 +3,7 @@ package security
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type TokenProvider struct {
@@ -14,15 +15,33 @@ func NewTokenProvider(token string) *TokenProvider {
 }
 
 func (p TokenProvider) Check(request http.Request) SecurityProviderCheckResult {
+	source := "?token="
 	token := request.URL.Query().Get("token")
+
+	if token == "" {
+		headerValue := request.Header.Get("authorization")
+		if headerValue != "" {
+			parsed, res := strings.CutPrefix(headerValue, "Bearer ")
+			if !res {
+				return SecurityProviderCheckResult{
+					Success:         false,
+					InternalMessage: fmt.Sprintf("The authorization header is invalid. Expected `Bearer %s` token, got `%s`", p.token, headerValue),
+					ExternalMessage: fmt.Sprintf("The authorization header is invalid. Got `%s`", headerValue),
+				}
+			}
+			source = "authorization: Bearer "
+			token = parsed
+		}
+	}
+
 	if token == p.token {
 		return SecurityProviderCheckResult{Success: true}
 	}
 
 	return SecurityProviderCheckResult{
 		Success:         false,
-		InternalMessage: fmt.Sprintf("The token provided through ?token=%s does not match %s", token, p.token),
-		ExternalMessage: fmt.Sprintf("The token provided through ?token=%s is invalid", token),
+		InternalMessage: fmt.Sprintf("The token provided through %s%s does not match %s", source, token, p.token),
+		ExternalMessage: fmt.Sprintf("The token provided through %s%s is invalid", source, token),
 	}
 }
 
