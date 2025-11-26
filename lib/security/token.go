@@ -19,18 +19,15 @@ func (p TokenProvider) Check(request http.Request) SecurityProviderCheckResult {
 	token := request.URL.Query().Get("token")
 
 	if token == "" {
-		headerValue := request.Header.Get("authorization")
-		if headerValue != "" {
-			parsed, res := strings.CutPrefix(headerValue, "Bearer ")
-			if !res {
-				return SecurityProviderCheckResult{
-					Success:         false,
-					InternalMessage: fmt.Sprintf("The authorization header is invalid. Expected `Bearer %s` token, got `%s`", p.token, headerValue),
-					ExternalMessage: fmt.Sprintf("The authorization header is invalid. Got `%s`", headerValue),
-				}
-			}
-			source = "authorization: Bearer "
-			token = parsed
+		token = extractBearerToken(request)
+		source = "Authorization: Bearer "
+	}
+
+	if token == "" {
+		return SecurityProviderCheckResult{
+			Success:         false,
+			InternalMessage: "No token provided through query parameter 'token' or Authorization header",
+			ExternalMessage: "No token provided",
 		}
 	}
 
@@ -54,4 +51,16 @@ func (p TokenProvider) Usage() []string {
 		"    params:",
 		fmt.Sprintf("      token: ['%s']", p.token),
 	}
+}
+
+func extractBearerToken(request http.Request) string {
+	headerValue := request.Header.Get("authorization")
+	if headerValue != "" {
+		parsed, res := strings.CutPrefix(headerValue, "Bearer ")
+		if res {
+			return parsed
+		}
+	}
+
+	return ""
 }
