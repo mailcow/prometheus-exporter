@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+
 	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -21,6 +22,10 @@ type domainItem struct {
 	Quota        json.Number `json:"max_quota_for_domain"`
 	QuotaUsed    json.Number `json:"bytes_total"`
 	Messages     json.Number `json:"msgs_total"`
+}
+
+func (Domain) Name() string {
+	return "Domain"
 }
 
 // All domain gauges have the same options anyways.

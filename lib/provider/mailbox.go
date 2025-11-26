@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+
 	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,6 +18,10 @@ type mailboxItem struct {
 	Quota         json.Number `json:"quota"`
 	QuotaUsed     json.Number `json:"quota_used"`
 	Messages      json.Number `json:"messages"`
+}
+
+func (Mailbox) Name() string {
+	return "Mailbox"
 }
 
 // All mailbox gauges have the same options anyways.

@@ -3,14 +3,16 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"log"
+	"net/http"
+	"strings"
+
 	"github.com/mailcow/prometheus-exporter/lib/config"
 	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"github.com/mailcow/prometheus-exporter/lib/provider"
 	"github.com/mailcow/prometheus-exporter/lib/security"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"log"
-	"net/http"
 )
 
 func collectMetrics(providers []provider.Provider, conf config.Config) *prometheus.Registry {
@@ -63,11 +65,14 @@ func collectMetrics(providers []provider.Provider, conf config.Config) *promethe
 }
 
 func main() {
-	conf, confSource := config.GetConfig()
-	providers := provider.DefaultProviders()
+	conf, confSource, confItems := config.GetConfig()
 	securityProvider := security.GetSecurityProvider(conf)
+	providers, err := provider.GetProviders(strings.Split(conf[config.Providers], ","))
+	if err != nil {
+		log.Fatalf("Error while initializing providers: %s", err.Error())
+	}
 
-	printConfig(conf, confSource, providers, securityProvider)
+	printConfig(conf, confSource, confItems, providers, securityProvider)
 
 	http.HandleFunc("/metrics", func(response http.ResponseWriter, request *http.Request) {
 		checkResult := securityProvider.Check(*request)
@@ -97,6 +102,7 @@ func main() {
 func printConfig(
 	config config.Config,
 	confSource config.ConfigSource,
+	confItems map[config.ConfigKey]config.ConfigItem,
 	providers []provider.Provider,
 	securityProvider security.SecurityProvider,
 ) {
@@ -105,6 +111,10 @@ func printConfig(
 	for key, value := range config {
 		log.Printf("\t%s:\t\"%s\"", key, value)
 		log.Printf("\t\t ↳ %s", confSource[key])
+		log.Printf("\t\t %s", confItems[key].Help)
+		log.Printf("\t\t ↳ ENV: %s", confItems[key].EnvVar)
+		log.Printf("\t\t ↳ CLI: %s", confItems[key].CliFlag)
+		log.Printf("\n")
 	}
 
 	log.Printf("\n")
@@ -115,7 +125,7 @@ func printConfig(
 	log.Printf("\n")
 	log.Printf("Providers:")
 	for _, p := range providers {
-		log.Printf("\t%T", p)
+		log.Printf("\t%s", p.Name())
 	}
 
 	log.Printf("\n")

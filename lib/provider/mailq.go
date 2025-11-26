@@ -15,6 +15,10 @@ type queueResponseItem struct {
 	Sender    string
 }
 
+func (Mailq) Name() string {
+	return "Mailq"
+}
+
 func (mailq Mailq) Provide(api mailcowApi.MailcowApiClient) ([]prometheus.Collector, error) {
 	gauge := *prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name:        "mailcow_mailq",

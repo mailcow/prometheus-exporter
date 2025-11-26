@@ -1,12 +1,17 @@
 package provider
 
 import (
+	"strconv"
+
 	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"github.com/prometheus/client_golang/prometheus"
-	"strconv"
 )
 
 type ApiMeta struct{}
+
+func (self ApiMeta) Name() string {
+	return "ApiMeta"
+}
 
 func (self ApiMeta) Provide(api mailcowApi.MailcowApiClient) ([]prometheus.Collector, error) {
 	responseTime := prometheus.NewGaugeVec(prometheus.GaugeOpts{

@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/mailcow/prometheus-exporter/lib/provider"
 )
 
 type ConfigKey string
@@ -17,6 +19,7 @@ const (
 	Listen                                  ConfigKey = "listen"
 	SecurityToken                           ConfigKey = "securityToken"
 	SecurityInsecureDisableAccessProtection ConfigKey = "securityInsecureDisableAccessProtection"
+	Providers                               ConfigKey = "providers"
 )
 
 type Config map[ConfigKey]string
@@ -66,10 +69,16 @@ var (
 			Default: "0",
 			Help:    "Disables access protection for the exporter if set to 1.\nThis may expose sensitive information if no other security precautions are used",
 		},
+		Providers: {
+			EnvVar:  "MAILCOW_EXPORTER_ACTIVE_PROVIDERS",
+			CliFlag: "providers",
+			Default: strings.Join(provider.ProviderNames(), ","),
+			Help:    "Comma separated list of active providers. By default, all providers are active",
+		},
 	}
 )
 
-func GetConfig() (Config, ConfigSource) {
+func GetConfig() (Config, ConfigSource, map[ConfigKey]ConfigItem) {
 	// Gather flags
 	flagValues := map[ConfigKey]*string{}
 	for key, configItem := range configItems {
@@ -124,7 +133,7 @@ func GetConfig() (Config, ConfigSource) {
 		log.Fatalf("Configuration validation errors:\n\t%s", strings.Join(validationErrors, "\n\t"))
 	}
 
-	return config, configSource
+	return config, configSource, configItems
 }
 
 func buildHelpString(item ConfigItem) string {

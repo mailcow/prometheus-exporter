@@ -55,14 +55,15 @@ the exporter in non-public networks.
 
 ### Configuration
 
-| Environment variable                                  | CLI-flag                                        | Default     | Description                                                                                  |
-|-------------------------------------------------------|-------------------------------------------------|-------------|----------------------------------------------------------------------------------------------|
-| `MAILCOW_EXPORTER_HOST`                               | `--host`                                        | [required]  | Hostname under which the mailcow instance is hosted                                          |
-| `MAILCOW_EXPORTER_API_KEY`                            | `--api-key`                                     | [required]  | API Key to use when accessing the mailcow API                                                |
-| `MAILCOW_EXPORTER_SCHEME`                             | `--scheme`                                      | `"https"`   | The scheme to use when accessing the API (must be `"http"` or `"https"`)                     |
-| `MAILCOW_EXPORTER_LISTEN`                             | `--listen`                                      | `":9099"`   | The hostname and port to listen on                                                           |
-| `MAILCOW_EXPORTER_SECURITY_TOKEN`                     | `--security-token`                              | `--api-key` | Token that must be provided through the `?token=...` URL parameter in order to fetch metrics |
-| `MAILCOW_EXPORTER_SECURITY_DISABLE_ACCESS_PROTECTION` | `--security-insecure-disable-access-protection` | `"0"`       | Disables authentication                                                                      |
+| Environment variable                                  | CLI-flag                                        | Default       | Description                                                                                  |
+|-------------------------------------------------------|-------------------------------------------------|---------------|----------------------------------------------------------------------------------------------|
+| `MAILCOW_EXPORTER_HOST`                               | `--host`                                        | [required]    | Hostname under which the mailcow instance is hosted                                          |
+| `MAILCOW_EXPORTER_API_KEY`                            | `--api-key`                                     | [required]    | API Key to use when accessing the mailcow API                                                |
+| `MAILCOW_EXPORTER_SCHEME`                             | `--scheme`                                      | `"https"`     | The scheme to use when accessing the API (must be `"http"` or `"https"`)                     |
+| `MAILCOW_EXPORTER_LISTEN`                             | `--listen`                                      | `":9099"`     | The hostname and port to listen on                                                           |
+| `MAILCOW_EXPORTER_SECURITY_TOKEN`                     | `--security-token`                              | `--api-key`   | Token that must be provided through the `?token=...` URL parameter in order to fetch metrics |
+| `MAILCOW_EXPORTER_SECURITY_DISABLE_ACCESS_PROTECTION` | `--security-insecure-disable-access-protection` | `"0"`         | Disables authentication                                                                      |
+| `MAILCOW_EXPORTER_ACTIVE_PROVIDERS`                   | `--providers`                                   | All providers | Allows enabling only a subset of metrics providers. May be useful for large installations    |
 ## Example metrics
 
 ```

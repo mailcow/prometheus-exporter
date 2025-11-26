@@ -1,8 +1,9 @@
 package provider
 
 import (
-	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"time"
+
+	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -17,6 +18,10 @@ type quarantineItem struct {
 	Score     float64 `json:"score"`
 	Recipient string  `json:"rcpt"`
 	Created   int64   `json:"created"`
+}
+
+func (Quarantine) Name() string {
+	return "Quarantine"
 }
 
 func (quarantine Quarantine) Provide(api mailcowApi.MailcowApiClient) ([]prometheus.Collector, error) {

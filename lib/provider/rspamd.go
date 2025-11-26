@@ -32,6 +32,10 @@ type RspamdResponse struct {
 	FuzzyHashes map[string]int `json:"fuzzy_hashes"`
 }
 
+func (Rspamd) Name() string {
+	return "Rspamd"
+}
+
 func (rspamd Rspamd) simpleGauge(
 	host string,
 	name string,

@@ -1,8 +1,9 @@
 package provider
 
 import (
-	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 	"time"
+
+	"github.com/mailcow/prometheus-exporter/lib/mailcowApi"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -14,6 +15,10 @@ type containerItem struct {
 	State     string `json:"state"`
 	StartedAt string `json:"started_at"`
 	Image     string `json:"image"`
+}
+
+func (container Container) Name() string {
+	return "Container"
 }
 
 func (container Container) Provide(api mailcowApi.MailcowApiClient) ([]prometheus.Collector, error) {
