@@ -36,7 +36,7 @@ func (mailbox Mailbox) Provide(api mailcowApi.MailcowApiClient) ([]prometheus.Co
 	collectors := []prometheus.Collector{lastLogin, quotaAllowed, quotaUsed, messages}
 
 	body := make([]mailboxItem, 0)
-	err := api.Get("api/v1/get/mailbox/all", &body)
+	err := api.Get("api/v1/get/mailbox/reduced", &body)
 	if err != nil {
 		return collectors, err
 	}
