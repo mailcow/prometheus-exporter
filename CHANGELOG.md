@@ -10,6 +10,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-27
+### Added
+* It is now possible to only collect a subset of metrics by using `MAILCOW_EXPORTER_ACTIVE_PROVIDERS` / `--providers`.
+  This can be useful for larger mailservers with many mailboxes.
+* The `Authorization: Bearer *` Header can now be used for authentication in place of the `?token=`
+  query parameter.
+
+### Docker Images
+* `ghcr.io/mailcow/prometheus-exporter:2`
+* `ghcr.io/mailcow/prometheus-exporter:2.1`
+* `ghcr.io/mailcow/prometheus-exporter:2.1.0`
+
 ## [2.0.1] - 2025-03-12
 ### Fixed
 * Fixed accidentally publishing windows/arm64 binary as windows/amd64
